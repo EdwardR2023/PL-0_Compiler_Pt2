@@ -30,11 +30,29 @@ int token_count = 0;
 
 // Function to check if a word is a keyword and return its token type
 int is_keyword(const char *word) {
-
+    if (strcmp(word, "begin") == 0) return beginsym;
+    if (strcmp(word, "end") == 0) return endsym;
+    if (strcmp(word, "if") == 0) return ifsym;
+    if (strcmp(word,"fi") == 0) return fisym;
+    if (strcmp(word, "then") == 0) return thensym;
+    if (strcmp(word, "while") == 0) return whilesym;
+    if (strcmp(word, "do") == 0) return dosym;
+    if (strcmp(word, "call") == 0) return callsym;
+    if (strcmp(word, "const") == 0) return constsym;
+    if (strcmp(word, "var") == 0) return varsym;
+    if (strcmp(word, "procedure") == 0) return procsym;
+    if (strcmp(word, "write") == 0) return writesym;
+    if (strcmp(word, "read") == 0) return readsym;
+    if (strcmp(word, "else") == 0) return elsesym;
+    return identsym;
     return identsym; // If not a keyword, consider it an identifier
-}
 
+}
+//adds into token array
 void add_token(int type, const char *value) {
+    tokens[token_count].type = type;
+    strcpy(tokens[token_count].value,value);
+    token_count++;
 
 }
 
