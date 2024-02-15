@@ -1,3 +1,5 @@
+//Alan Pons
+//Edward Rosales
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
@@ -76,20 +78,11 @@ int is_symbol(const char *word) {
     return -1;
 }
 
-void add_token(int type, char *value) {
-
-    return identsym; // If not a keyword, consider it an identifier
-
-}
 //adds into token array
 void add_token(int type, const char *value) {
     tokens[token_count].type = type;
     strcpy(tokens[token_count].value,value);
     token_count++;
- main
-
-    strcpy(tokens[token_count].value, value);
-    tokens[token_count++].type = type;
 }
 
 void tokenize_line(const char *line){
