@@ -35,6 +35,7 @@ int isComment = 0;
 
 // Function to check if a word is a keyword and return its token type
 int is_keyword(const char *word) {
+
     if (strcmp(word, "null") == 0) return skipsym;
     if (strcmp(word, "begin") == 0) return beginsym;
     if (strcmp(word, "end") == 0) return endsym;
@@ -51,6 +52,7 @@ int is_keyword(const char *word) {
     if (strcmp(word, "read") == 0) return readsym;
     if (strcmp(word, "else") == 0) return elsesym;
     return identsym;
+
     // If not a keyword, consider it an identifier
 }
 
@@ -75,6 +77,16 @@ int is_symbol(const char *word) {
 }
 
 void add_token(int type, char *value) {
+
+    return identsym; // If not a keyword, consider it an identifier
+
+}
+//adds into token array
+void add_token(int type, const char *value) {
+    tokens[token_count].type = type;
+    strcpy(tokens[token_count].value,value);
+    token_count++;
+ main
 
     strcpy(tokens[token_count].value, value);
     tokens[token_count++].type = type;
