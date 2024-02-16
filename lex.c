@@ -127,10 +127,11 @@ void tokenize_line(const char *line){
 
             int symType = is_symbol(word);
 
-            if (symType == -1)
-                printf("eh");
-            else
+            if (symType == -1){
+
                 add_token(symType, word);
+
+            }
         } else{
             c = line[lineCounter++];
         }
@@ -165,16 +166,24 @@ int main() {
     printf("\n\nLEXEME TABLE\n\nLexeme\t\tToken Type\n");
     for(int i = 0; i < token_count; i++){
 
-        printf("%s\t\t%d\n", tokens[i].value, tokens[i].type);
+        if(tokens[i].type == -1)
+            printf("%s\t\tINVALID\n",tokens[i].value);
+        else
+            printf("%s\t\t%d\n", tokens[i].value, tokens[i].type);
+
+
     }
 
     printf("\nTOKEN LIST\n");
     for(int i = 0; i < token_count; i++){
 
-        printf("%d ", tokens[i].type);
+        if(tokens[i].type > 0 )
+            printf("%d ", tokens[i].type);
 
         if(tokens[i].type == 2 || tokens[i].type == 3)
             printf("%s ", tokens[i].value);
+
+
     }
     fclose(file);
     return 0;
