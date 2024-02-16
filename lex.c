@@ -136,11 +136,9 @@ void tokenize_line(const char *line){
 
             int symType = is_symbol(word);
 
-            if (symType == -1){
+            add_token(symType, word);
 
-                add_token(symType, word);
 
-            }
         } else{
             c = line[lineCounter++];
         }
@@ -175,14 +173,15 @@ int main() {
     printf("\n\nLEXEME TABLE\n\nLexeme\t\t\tToken Type\n");
     for(int i = 0; i < token_count; i++){
 
-        if(tokens[i].type == -1)
+        if(tokens[i].type > 0)
+            printf("%s\t\t\t%d\n", tokens[i].value, tokens[i].type);
+        else if(tokens[i].type == -1)
             printf("%s\t\t\tERROR: INVALID SYMBOL\n",tokens[i].value);
         else if(tokens[i].type == -2)
             printf("%s\t\t\tERROR: IDENTIFIER IS TOO LONG\n",tokens[i].value);
         else if(tokens[i].type == -3)
             printf("%s\t\t\tERROR: NUMBER IS TOO LONG\n",tokens[i].value);
-        else
-            printf("%s\t\t\t%d\n", tokens[i].value, tokens[i].type);
+
 
 
     }
