@@ -117,8 +117,12 @@ void tokenize_line(const char *line){
                 word[wordLen++] = c;
                 c = line[lineCounter++];
             }
+            if(strlen(word) <= MAX_NUM_LEN)
+                add_token(numbersym, word);
 
-            add_token(numbersym, word);
+            else
+                add_token(-3,word);
+
         }
 
             //Symbol loop
@@ -175,6 +179,8 @@ int main() {
             printf("%s\t\t\tERROR: INVALID SYMBOL\n",tokens[i].value);
         else if(tokens[i].type == -2)
             printf("%s\t\t\tERROR: IDENTIFIER IS TOO LONG\n",tokens[i].value);
+        else if(tokens[i].type == -3)
+            printf("%s\t\t\tERROR: NUMBER IS TOO LONG\n",tokens[i].value);
         else
             printf("%s\t\t\t%d\n", tokens[i].value, tokens[i].type);
 
