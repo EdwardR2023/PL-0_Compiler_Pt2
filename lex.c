@@ -109,7 +109,7 @@ void tokenize_line(const char *line){
 
         }
 
-        //Number loop
+            //Number loop
         else if(isdigit(c)) {
 
             while (isdigit(c)) {
@@ -121,7 +121,7 @@ void tokenize_line(const char *line){
             add_token(numbersym, word);
         }
 
-        //Symbol loop
+            //Symbol loop
         else if(!isspace(c)) {
 
             while (!isspace(c) && !isalpha(c) && !isdigit(c)) {
