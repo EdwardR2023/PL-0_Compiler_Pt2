@@ -127,7 +127,10 @@ void tokenize_line(const char *line){
 
             //Symbol loop
         else if(!isspace(c)) {
-
+            //need fix to check for invalid and valid symbols at the same time. 
+            //EX: !<>
+            //! would be invalid but <> should still be tokenized like usual.
+    
             while (!isspace(c) && !isalpha(c) && !isdigit(c)) {
 
                 word[wordLen++] = c;
