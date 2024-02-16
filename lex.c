@@ -23,7 +23,7 @@ enum {  skipsym = 1, identsym = 2, numbersym = 3, plussym = 4, minussym = 5,
 // Token structure
 typedef struct {
     int type;
-    char value[MAX_IDENT_LEN + 1]; // +1 for null terminator
+    char value[MAX_STR_LEN]; // +1 for null terminator
 } Token;
 
 // Array to store tokens
@@ -101,7 +101,12 @@ void tokenize_line(const char *line){
                 c = line[lineCounter++];
             }
 
-            add_token(is_keyword(word), word);
+            if(strlen(word) <= MAX_IDENT_LEN)
+                add_token(is_keyword(word), word);
+
+            else
+                add_token(-2,word);
+
         }
 
         //Number loop
@@ -119,7 +124,7 @@ void tokenize_line(const char *line){
         //Symbol loop
         else if(!isspace(c)) {
 
-            while (!isspace(c)) {
+            while (!isspace(c) && !isalpha(c) && !isdigit(c)) {
 
                 word[wordLen++] = c;
                 c = line[lineCounter++];
@@ -163,13 +168,15 @@ int main() {
         tokenize_line(line);
     }
 
-    printf("\n\nLEXEME TABLE\n\nLexeme\t\tToken Type\n");
+    printf("\n\nLEXEME TABLE\n\nLexeme\t\t\tToken Type\n");
     for(int i = 0; i < token_count; i++){
 
         if(tokens[i].type == -1)
-            printf("%s\t\tINVALID\n",tokens[i].value);
+            printf("%s\t\t\tERROR: INVALID SYMBOL\n",tokens[i].value);
+        else if(tokens[i].type == -2)
+            printf("%s\t\t\tERROR: IDENTIFIER IS TOO LONG\n",tokens[i].value);
         else
-            printf("%s\t\t%d\n", tokens[i].value, tokens[i].type);
+            printf("%s\t\t\t%d\n", tokens[i].value, tokens[i].type);
 
 
     }
