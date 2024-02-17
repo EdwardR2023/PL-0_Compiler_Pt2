@@ -59,6 +59,7 @@ int is_keyword(const char *word) {
     // If not a keyword, consider it an identifier
 }
 
+//Function used to check for valid symbols and returns its token type
 int is_symbol(const char *word) {
     if (strcmp(word, "+") == 0) return plussym;
     if (strcmp(word, "-") == 0) return minussym;
@@ -114,7 +115,8 @@ void tokenize_line(const char *line) {
         return; // Skip further processing for this line
     }
 
-    while ((c != '\n' && c != '.') || isComment) {
+    //loops to the end of the file
+    while ((c != '\n' && c != '.') ) {
 
         char word[MAX_STR_LEN] = {0};
 
