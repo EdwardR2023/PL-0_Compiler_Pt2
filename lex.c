@@ -90,38 +90,38 @@ void add_token(int type, const char *value) {
 void tokenize_line(const char *line) {
 
     int lineCounter = 0, wordLen = 0;
-    char c = line[lineCounter++];
+    char c;
+    if(!isComment)
+        c = line[lineCounter++];
 
-    // Check for comments
-    if (line[lineCounter-1] == '/' && line[lineCounter] == '*' || isComment == 1) {
-        isComment = 1;
-        lineCounter++;
-        // Move past the opening comment delimiter
-        while (line[lineCounter] != '\0') {
-            if (line[lineCounter] == '*' && line[lineCounter + 1] == '/') {
-                // Move past the closing comment delimiter
-                lineCounter++;
-                // Reset comment flag
-                isComment = 0;
-                break;
-            }
-            lineCounter++;
-        }
-        return; // Skip further processing for this line
-    }
 
-    // Ignore characters inside comments
-    if (isComment) {
-        return; // Skip further processing for this line
-    }
 
     //loops to the end of the file
-    while ((c != '\n' && c != '.') ) {
+    while ((isComment || c != '\0') ) {
 
         char word[MAX_STR_LEN] = {0};
+        // Check for comments
+        if ( isComment == 1) {
+            isComment = 1;
+            lineCounter++;
+            // Move past the opening comment delimiter
+            while (line[lineCounter] != '\0' && isComment) {
+                if (line[lineCounter-1] == '*' && line[lineCounter] == '/') {
+
+                    // Reset comment flag
+                    isComment = 0;
+                }
+                lineCounter++;
+            }
+            c = line[lineCounter];
+            // Ignore characters inside comments
+            if (isComment) {
+                return; // Skip further processing for this line
+            }
+        }
 
         //Keyword/Identifier loop
-        if (isalpha(c)) {
+        else if (isalpha(c) && !isComment) {
 
             while (isalpha(c) || isdigit(c)) {
 
@@ -153,22 +153,27 @@ void tokenize_line(const char *line) {
 
         }
 
-            //Symbol loop
-        else if (!isspace(c)) {
+            //Symbol check
+        else if (!isspace(c) ) {
 
-            while (!isspace(c) && !isalpha(c) && !isdigit(c)) {
+            while (!isspace(c) && !isalpha(c) && !isdigit(c) && !isComment) {
                 if(line[lineCounter -1 ] == '/' && line[lineCounter] == '*'){
                     isComment = 1;
-                    return;
-                }
 
-                word[wordLen++] = c;
-                c = line[lineCounter++];
+                }
+                else{
+                    word[wordLen++] = c;
+                    c = line[lineCounter++];
+                }
             }
 
-            int symType = is_symbol(word);
-
-            add_token(symType, word);
+            if(!isComment){
+                int symType = is_symbol(word);
+                add_token(symType, word);
+            }
+            else{
+                c = line[lineCounter++];
+            }
 
 
         } else {
@@ -178,17 +183,19 @@ void tokenize_line(const char *line) {
         wordLen = 0;
 
     }
-
-    if (c == '.') {
-
-        add_token(periodsym, &c);
-    }
 }
 
 
 // Main function
-int main() {
-    FILE *file = fopen("input.txt", "r"); // Open input file
+int main(int argc, char *argv[]) {
+    // Check if a file name is provided
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s filename\n", argv[0]);
+        return 1;
+    }
+
+    // Open input file
+    FILE *file = fopen(argv[1], "r");
     if (!file) {
         perror("Error opening file.\n");
         return 1;
