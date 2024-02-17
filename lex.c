@@ -10,7 +10,8 @@
 #define MAX_STR_LEN 256
 
 // Token types
-enum {  skipsym = 1, identsym = 2, numbersym = 3, plussym = 4, minussym = 5,
+enum {
+    skipsym = 1, identsym = 2, numbersym = 3, plussym = 4, minussym = 5,
     multsym = 6, slashsym = 7, fisym = 8, eqlsym = 9, neqsym = 10, lessym = 11,
     leqsym = 12, gtrsym = 13, geqsym = 14, lparentsym = 15, rparentsym = 16,
     commasym = 17, semicolonsym = 18, periodsym = 19, becomessym = 20,
@@ -31,8 +32,8 @@ Token tokens[MAX_CODE_LEN];
 int token_count = 0;
 
 //Boolean is true while inside a comment
+//initialized as false
 int isComment = 0;
-
 
 
 // Function to check if a word is a keyword and return its token type
@@ -42,7 +43,7 @@ int is_keyword(const char *word) {
     if (strcmp(word, "begin") == 0) return beginsym;
     if (strcmp(word, "end") == 0) return endsym;
     if (strcmp(word, "if") == 0) return ifsym;
-    if (strcmp(word,"fi") == 0) return fisym;
+    if (strcmp(word, "fi") == 0) return fisym;
     if (strcmp(word, "then") == 0) return thensym;
     if (strcmp(word, "while") == 0) return whilesym;
     if (strcmp(word, "do") == 0) return dosym;
@@ -81,19 +82,44 @@ int is_symbol(const char *word) {
 //adds into token array
 void add_token(int type, const char *value) {
     tokens[token_count].type = type;
-    strcpy(tokens[token_count].value,value);
+    strcpy(tokens[token_count].value, value);
     token_count++;
 }
 
-void tokenize_line(const char *line){
+void tokenize_line(const char *line) {
 
     int lineCounter = 0, wordLen = 0;
     char c = line[lineCounter++];
-    while( ( c != '\n' && c != '.')|| isComment){
+
+    // Check for comments
+    if (line[lineCounter-1] == '/' && line[lineCounter] == '*' || isComment == 1) {
+        isComment = 1;
+        lineCounter++;
+        // Move past the opening comment delimiter
+        while (line[lineCounter] != '\0') {
+            if (line[lineCounter] == '*' && line[lineCounter + 1] == '/') {
+                // Move past the closing comment delimiter
+                lineCounter++;
+                // Reset comment flag
+                isComment = 0;
+                break;
+            }
+            lineCounter++;
+        }
+        return; // Skip further processing for this line
+    }
+
+    // Ignore characters inside comments
+    if (isComment) {
+        return; // Skip further processing for this line
+    }
+
+    while ((c != '\n' && c != '.') || isComment) {
 
         char word[MAX_STR_LEN] = {0};
+
         //Keyword/Identifier loop
-        if(isalpha(c)) {
+        if (isalpha(c)) {
 
             while (isalpha(c) || isdigit(c)) {
 
@@ -101,34 +127,38 @@ void tokenize_line(const char *line){
                 c = line[lineCounter++];
             }
 
-            if(strlen(word) <= MAX_IDENT_LEN)
+            if (strlen(word) <= MAX_IDENT_LEN)
                 add_token(is_keyword(word), word);
 
             else
-                add_token(-2,word);
+                add_token(-2, word);
 
         }
 
             //Number loop
-        else if(isdigit(c)) {
+        else if (isdigit(c)) {
 
             while (isdigit(c)) {
 
                 word[wordLen++] = c;
                 c = line[lineCounter++];
             }
-            if(strlen(word) <= MAX_NUM_LEN)
+            if (strlen(word) <= MAX_NUM_LEN)
                 add_token(numbersym, word);
 
             else
-                add_token(-3,word);
+                add_token(-3, word);
 
         }
 
             //Symbol loop
-        else if(!isspace(c)) {
+        else if (!isspace(c)) {
 
             while (!isspace(c) && !isalpha(c) && !isdigit(c)) {
+                if(line[lineCounter -1 ] == '/' && line[lineCounter] == '*'){
+                    isComment = 1;
+                    return;
+                }
 
                 word[wordLen++] = c;
                 c = line[lineCounter++];
@@ -139,7 +169,7 @@ void tokenize_line(const char *line){
             add_token(symType, word);
 
 
-        } else{
+        } else {
             c = line[lineCounter++];
         }
 
@@ -147,12 +177,11 @@ void tokenize_line(const char *line){
 
     }
 
-    if( c == '.') {
+    if (c == '.') {
 
         add_token(periodsym, &c);
     }
 }
-
 
 
 // Main function
@@ -166,33 +195,32 @@ int main() {
     char line[MAX_CODE_LEN];
     printf("SOURCE PROGRAM:\n");
     while (fgets(line, sizeof(line), file)) {
-        printf("%s",line);
+        printf("%s", line);
         tokenize_line(line);
     }
 
     printf("\n\nLEXEME TABLE\n\nLexeme\t\t\tToken Type\n");
-    for(int i = 0; i < token_count; i++){
+    for (int i = 0; i < token_count; i++) {
 
-        if(tokens[i].type > 0)
+        if (tokens[i].type > 0)
             printf("%s\t\t\t%d\n", tokens[i].value, tokens[i].type);
-        else if(tokens[i].type == -1)
-            printf("%s\t\t\tERROR: INVALID SYMBOL\n",tokens[i].value);
-        else if(tokens[i].type == -2)
-            printf("%s\t\t\tERROR: IDENTIFIER IS TOO LONG\n",tokens[i].value);
-        else if(tokens[i].type == -3)
-            printf("%s\t\t\tERROR: NUMBER IS TOO LONG\n",tokens[i].value);
-
+        else if (tokens[i].type == -1)
+            printf("%s\t\t\tERROR: INVALID SYMBOL\n", tokens[i].value);
+        else if (tokens[i].type == -2)
+            printf("%s\t\t\tERROR: IDENTIFIER IS TOO LONG\n", tokens[i].value);
+        else if (tokens[i].type == -3)
+            printf("%s\t\t\tERROR: NUMBER IS TOO LONG\n", tokens[i].value);
 
 
     }
 
     printf("\nTOKEN LIST\n");
-    for(int i = 0; i < token_count; i++){
+    for (int i = 0; i < token_count; i++) {
 
-        if(tokens[i].type > 0 )
+        if (tokens[i].type > 0)
             printf("%d ", tokens[i].type);
 
-        if(tokens[i].type == 2 || tokens[i].type == 3)
+        if (tokens[i].type == 2 || tokens[i].type == 3)
             printf("%s ", tokens[i].value);
 
 
