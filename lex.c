@@ -94,7 +94,21 @@ void tokenize_line(const char *line) {
     if(!isComment)
         c = line[lineCounter++];
 
+    //deals with string length of 1 (last line of ta case)
+    if(strlen(line) < 2){
 
+        c = line[0];
+        if(isalpha(c)){
+            add_token(is_keyword(line), line);
+        }
+        else if (isdigit(c)){
+            add_token(numbersym,line);
+        }
+        else if (!isspace(c)){
+            add_token(is_symbol(line),line);
+        }
+        return;
+    }
 
     //loops to the end of the file
     while ((isComment || c != '\0') ) {
