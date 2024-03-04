@@ -183,8 +183,29 @@ void tokenize_line(char *line) {
             }
 
             if(!isComment){
-                int symType = is_symbol(word);
-                add_token(symType, word);
+                int symType, i = 0;
+                char sym[2];
+
+                sym[0] = word[i];
+
+                if(is_symbol(word) == -1){
+                    while(i < wordLen){
+
+                        i++;
+                        symType = is_symbol(sym);
+                        add_token(symType, sym);
+
+                        sym[0] = word[i];
+
+
+                    }
+
+                }
+                else{
+                    symType = is_symbol(word);
+                    add_token(symType, word);
+
+                }
             }
             else{
                 c = line[lineCounter++];
