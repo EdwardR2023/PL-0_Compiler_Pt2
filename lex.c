@@ -196,8 +196,6 @@ void tokenize_line(char *line) {
                         add_token(symType, sym);
 
                         sym[0] = word[i];
-
-
                     }
 
                 }
